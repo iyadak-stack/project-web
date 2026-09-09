@@ -12,7 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('student_contacts', function (Blueprint $table) {
-            $table->id();
+            $table->char('Contac_id', 10)->primary();
+            $table->string('line_id', 45)->nullable();
+            $table->string('discord_id', 200)->nullable();
+            $table->string('google_meet_link', 200)->nullable();
+            $table->string('zoom_link', 200)->nullable();
             $table->timestamps();
         });
     }
