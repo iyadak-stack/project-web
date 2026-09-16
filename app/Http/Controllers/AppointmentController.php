@@ -12,6 +12,7 @@ class AppointmentController extends Controller
     public function index()
     {
         $appointments = Appointment::with(['subject', 'location'])->get();
+
         return view('appointments.index', compact('appointments'));
     }
 
@@ -99,6 +100,7 @@ class AppointmentController extends Controller
     public function destroy(Appointment $appointment)
     {
         $appointment->delete();
+
         return redirect()->route('appointments.index')->with('success', 'ลบนัดหมายสำเร็จ');
     }
 }

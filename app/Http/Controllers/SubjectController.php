@@ -13,6 +13,7 @@ class SubjectController extends Controller
     public function index()
     {
         $subjects = Subject::all();
+
         return view('subjects.index', compact('subjects'));
     }
 
@@ -42,10 +43,10 @@ class SubjectController extends Controller
     /**
      * Display the specified resource.
      */
-    //public function show(string $id)
-    //{
-        //
-    //}
+    // public function show(string $id)
+    // {
+    //
+    // }
 
     /**
      * Show the form for editing the specified resource.
