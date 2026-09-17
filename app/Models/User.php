@@ -15,6 +15,9 @@ use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 /**
  * @property int $id
  * @property string $name
@@ -58,5 +61,16 @@ class User extends Authenticatable implements PasskeyUser
         return Str::length($initials) > 1
             ? Str::substr($initials, 0, 1).Str::substr($initials, -1)
             : $initials;
+    }
+
+    public function tutorProfile(): HasOne
+{
+    return $this->hasOne(TutorProfile::class);
+}
+
+// 2. รายการ Favorite ทั้งหมดที่ User คนนี้กดเซฟไว้[cite: 1]
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(Favorite::class);
     }
 }
