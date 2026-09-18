@@ -1,31 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Search Tutor or Subject</title>
 </head>
+
 <body>
 
-    <!-- Navigation Menu -->
     <x-tutor-navbar />
 
     <h1>Search Tutor or Subject</h1>
 
     <p>
-        ค้นหาติวเตอร์หรือวิชาได้ที่นี่
+        Search for a tutor or subject using one search box.
     </p>
 
     <form action="{{ route('tutor.search') }}" method="GET">
+
         <input
             type="text"
             id="search"
             name="search"
             value="{{ $search }}"
-            placeholder="พิมพ์ชื่อติวเตอร์ หรือชื่อวิชา..."
+            placeholder="Search tutor or subject..."
         >
 
         <button type="submit">
-            ค้นหา
+            Search
         </button>
 
     </form>
@@ -34,20 +36,27 @@
 
         <hr>
 
-        <h2>ผลการค้นหาติวเตอร์</h2>
+        <h2>Search Results for "{{ $search }}"</h2>
+
+        {{-- =========================
+             TUTOR RESULTS
+        ========================== --}}
 
         @if ($tutors->count() > 0)
+
+            <h3>Tutors</h3>
 
             @foreach ($tutors as $tutor)
 
                 <div>
-                    <h3>
+
+                    <h4>
                         {{ $tutor->user->name ?? 'Unknown Tutor' }}
-                    </h3>
+                    </h4>
 
                     <p>
-                        Bio:
-                        {{ $tutor->bio ?? 'No bio available' }}
+                        Rating:
+                        ⭐ {{ number_format($tutor->average_rating, 2) }}
                     </p>
 
                     <p>
@@ -56,55 +65,133 @@
                     </p>
 
                     <p>
-                        Rating:
-                        {{ $tutor->average_rating }}
-                    </p>
-
-                    <p>
                         Teaching Mode:
                         {{ $tutor->teaching_mode }}
                     </p>
+
+                    <p>
+                        Bio:
+                        {{ $tutor->bio ?? 'No bio available.' }}
+                    </p>
+
+                    <strong>
+                        Subjects taught:
+                    </strong>
+
+                    @if ($tutor->subjects->count() > 0)
+
+                        <ul>
+
+                            @foreach ($tutor->subjects as $subject)
+
+                                <li>
+                                    {{ $subject->subject_name }}
+                                </li>
+
+                            @endforeach
+
+                        </ul>
+
+                    @else
+
+                        <p>
+                            No subjects assigned yet.
+                        </p>
+
+                    @endif
+
+                    <a href="{{ route('tutor.show', $tutor) }}">
+                        View Tutor
+                    </a>
+
                 </div>
 
                 <hr>
 
             @endforeach
 
-        @else
-
-            <p>ไม่พบติวเตอร์</p>
-
         @endif
 
 
-        <h2>ผลการค้นหาวิชา</h2>
+        {{-- =========================
+             SUBJECT RESULTS
+        ========================== --}}
 
         @if ($subjects->count() > 0)
+
+            <h3>Subjects</h3>
 
             @foreach ($subjects as $subject)
 
                 <div>
-                    <h3>
+
+                    <h4>
                         {{ $subject->subject_name }}
-                    </h3>
+                    </h4>
 
                     <p>
                         Subject ID:
                         {{ $subject->Subjec_id }}
                     </p>
+
+                    <strong>
+                        Tutors who teach this subject:
+                    </strong>
+
+                    @if ($subject->tutors->count() > 0)
+
+                        <ul>
+
+                            @foreach ($subject->tutors as $tutor)
+
+                                <li>
+
+                                    <a href="{{ route('tutor.show', $tutor) }}">
+                                        {{ $tutor->user->name ?? 'Unknown Tutor' }}
+                                    </a>
+
+                                    <br>
+
+                                    Rating:
+                                    ⭐ {{ number_format($tutor->average_rating, 2) }}
+
+                                </li>
+
+                            @endforeach
+
+                        </ul>
+
+                    @else
+
+                        <p>
+                            No tutors assigned yet.
+                        </p>
+
+                    @endif
+
                 </div>
 
                 <hr>
 
             @endforeach
 
-        @else
+        @endif
 
-            <p>ไม่พบวิชา</p>
+
+        {{-- =========================
+             NO RESULTS
+        ========================== --}}
+
+        @if ($tutors->count() === 0 && $subjects->count() === 0)
+
+            <p>
+                No tutors or subjects found.
+            </p>
 
         @endif
 
     @endif
 
 </body>
+
 </html>

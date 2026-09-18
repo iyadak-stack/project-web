@@ -10,10 +10,6 @@
 
     <h1>Favorite Tutors</h1>
 
-    <p>
-        รายการติวเตอร์ที่คุณกด Favorite ไว้
-    </p>
-
     @if ($favorites->count() > 0)
 
         @foreach ($favorites as $favorite)

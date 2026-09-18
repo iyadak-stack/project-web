@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TutorController;
 use App\Http\Controllers\FavoriteController;
 
-Route::view('/', 'welcome')->name('home');
+Route::get('/', [TutorController::class, 'home'])->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
@@ -32,6 +32,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/tutors/favorites', [FavoriteController::class, 'tutorFavorites'])
         ->name('tutor.favorites');
+
+    Route::get('/tutors/{tutorProfile}', [TutorController::class, 'show'])
+        ->name('tutor.show');
 });
 
 require __DIR__.'/settings.php';

@@ -4,10 +4,29 @@ namespace App\Http\Controllers;
 
 use App\Models\TutorProfile;
 use App\Models\Subject;
+use App\Models\Favorite;
 use Illuminate\Http\Request;
 
 class TutorController extends Controller
 {
+    public function home()
+    {
+        $topTutors = TutorProfile::with(['user', 'subjects'])
+            ->orderByDesc('average_rating')
+            ->orderByDesc('experience_years')
+            ->take(5)
+            ->get();
+
+        $topSubjects = Subject::with('tutors')
+            ->take(5)
+            ->get();
+
+        return view('welcome', compact(
+            'topTutors',
+            'topSubjects'
+        ));
+    }
+
     public function profile()
     {
         $tutorProfile = TutorProfile::where('user_id', auth()->id())->first();
@@ -46,20 +65,62 @@ class TutorController extends Controller
     {
         $search = trim($request->input('search', ''));
 
-        $tutors = TutorProfile::with('user')
+        $tutors = TutorProfile::with(['user', 'subjects'])
             ->when($search !== '', function ($query) use ($search) {
-                $query->whereHas('user', function ($userQuery) use ($search) {
-                    $userQuery->where('name', 'like', "%{$search}%");
+                $query->where(function ($q) use ($search) {
+
+                    // Search by Tutor name
+                    $q->whereHas('user', function ($userQuery) use ($search) {
+                        $userQuery->where(
+                            'name',
+                            'like',
+                            "%{$search}%"
+                        );
+                    })
+
+                    // OR search by Subject name
+                    ->orWhereHas('subjects', function ($subjectQuery) use ($search) {
+                        $subjectQuery->where(
+                            'subject_name',
+                            'like',
+                            "%{$search}%"
+                        );
+                    });
                 });
             })
             ->orderByDesc('average_rating')
+            ->orderByDesc('experience_years')
             ->get();
 
-        $subjects = Subject::query()
-            ->when($search !== '', function ($query) use ($search) {
-                $query->where('subject_name', 'like', "%{$search}%");
+        /*
+        * Subjects shown in the result should be
+        * the subjects taught by the tutors found above.
+        */
+        $subjects = $tutors
+            ->flatMap(function ($tutor) {
+                return $tutor->subjects;
             })
-            ->get();
+            ->unique('Subjec_id')
+            ->values();
+
+        /*
+        * If the search matches a Subject directly,
+        * also make sure that subject appears in the result.
+        */
+        if ($search !== '') {
+            $matchedSubjects = Subject::with('tutors.user')
+                ->where(
+                    'subject_name',
+                    'like',
+                    "%{$search}%"
+                )
+                ->get();
+
+            $subjects = $subjects
+                ->merge($matchedSubjects)
+                ->unique('Subjec_id')
+                ->values();
+        }
 
         return view('tutor.search', compact(
             'tutors',
@@ -75,5 +136,20 @@ class TutorController extends Controller
             ->get();
 
         return view('tutor.ranking', compact('tutors'));
+    }
+
+    public function show(TutorProfile $tutorProfile)
+    {
+        $tutorProfile->load(['user', 'subjects']);
+
+        $isFavorite = Favorite::where('user_id', auth()->id())
+            ->where('favoritable_type', TutorProfile::class)
+            ->where('favoritable_id', $tutorProfile->id)
+            ->exists();
+
+        return view('tutor.show', compact(
+            'tutorProfile',
+            'isFavorite'
+        ));
     }
 }
