@@ -31,4 +31,9 @@ class Subject extends Model
             'id'
         );
     }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
+    }
 }
