@@ -1,19 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Tutor Ranking</title>
-</head>
-<body>
-    <!-- Navigation Menu -->
-    <x-tutor-navbar />
+@extends('layouts.tutor')
+
+@section('title', 'Tutor Ranking')
+
+@section('content')
 
     <h1>Tutor Ranking</h1>
-
     <p>
         จัดอันดับติวเตอร์ตามคะแนนรีวิวและประสบการณ์
     </p>
-
     @if (session('success'))
         <p>
             {{ session('success') }}
@@ -21,9 +15,7 @@
     @endif
 
     @if ($tutors->count() > 0)
-
         @foreach ($tutors as $index => $tutor)
-
             <div>
                 <h2>
                     อันดับ {{ $index + 1 }}:
@@ -44,61 +36,52 @@
                     Teaching Mode:
                     {{ $tutor->teaching_mode }}
                 </p>
-
                 @php
                     $isFavorite = auth()->user()
                         ->favorites()
-                        ->where('favoritable_type', \App\Models\TutorProfile::class)
-                        ->where('favoritable_id', $tutor->id)
+                        ->where(
+                            'favoritable_type',
+                            \App\Models\TutorProfile::class
+                        )
+                        ->where(
+                            'favoritable_id',
+                            $tutor->id
+                        )
                         ->exists();
                 @endphp
 
                 @if ($isFavorite)
-
                     <form
                         action="{{ route('tutor.favorite.destroy', $tutor) }}"
                         method="POST"
                     >
                         @csrf
-                        @method('DELETE')
 
                         <button type="submit">
                             ♥ Unfavorite
                         </button>
+
                     </form>
-
                 @else
-
                     <form
                         action="{{ route('tutor.favorite.store', $tutor) }}"
                         method="POST"
                     >
                         @csrf
-
                         <button type="submit">
                             ♡ Favorite
                         </button>
                     </form>
-
                 @endif
-
-            </div>
-
-            <hr>
-
+            </div><hr>
         @endforeach
-
     @else
-
-        <p>ยังไม่มีข้อมูลติวเตอร์</p>
-
+        <p>
+            ยังไม่มีข้อมูลติวเตอร์
+        </p>
     @endif
-
     <br>
-
     <a href="{{ route('tutor.search') }}">
         กลับไปหน้าค้นหาติวเตอร์
     </a>
-    
-</body>
-</html>
+@endsection

@@ -1,30 +1,17 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+@extends('layouts.tutor')
 
-    <title>PeerTutor</title>
-</head>
+@section('title', 'Home')
 
-<body>
-
-    <x-tutor-navbar />
+@section('content')
 
     <h1>PeerTutor</h1>
-
     <p>
         Find tutors, explore subjects, and manage your lessons.
-    </p>
-
-    <hr>
-
+    </p><hr>
     <h2>⭐ Top Rated Tutors</h2>
 
     @if ($topTutors->count() > 0)
-
         @foreach ($topTutors as $tutor)
-
             <div>
                 <h3>
                     {{ $tutor->user->name ?? 'Unknown Tutor' }}
@@ -44,15 +31,12 @@
                     Teaching Mode:
                     {{ $tutor->teaching_mode }}
                 </p>
-
                 <p>
                     Subjects:
                     @if ($tutor->subjects->count() > 0)
-
                         @foreach ($tutor->subjects as $subject)
                             {{ $subject->subject_name }}@if (!$loop->last), @endif
                         @endforeach
-
                     @else
                         No subjects assigned yet.
                     @endif
@@ -61,51 +45,34 @@
                 <a href="{{ route('tutor.show', $tutor) }}">
                     View Tutor
                 </a>
-            </div>
-
-            <hr>
-
+            </div><hr>
         @endforeach
-
     @else
-
         <p>No tutors available yet.</p>
-
     @endif
 
-
     <h2>📚 Top Rated Subjects</h2>
-
     <p>
         Subject ratings will be connected to the Review system later.
     </p>
 
     @if ($topSubjects->count() > 0)
-
         @foreach ($topSubjects as $subject)
-
             <div>
                 <h3>
                     {{ $subject->subject_name }}
                 </h3>
-
                 <p>
                     Tutors teaching this subject:
                     {{ $subject->tutors->count() }}
                 </p>
-            </div>
-
-            <hr>
-
+            </div><hr>
         @endforeach
 
     @else
-
         <p>No subjects available yet.</p>
 
     @endif
-
-
     <h2>📅 Upcoming Lessons</h2>
 
     <p>
@@ -117,5 +84,4 @@
         and Schedule system later.
     </p>
 
-</body>
-</html>
+@endsection

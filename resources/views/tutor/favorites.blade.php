@@ -1,12 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Favorite Tutors</title>
-</head>
-<body>
-    <!-- Navigation Menu -->
-    <x-tutor-navbar />
+@extends('layouts.tutor')
+
+@section('title', 'Favorite Tutors')
+
+@section('content')
 
     <h1>Favorite Tutors</h1>
 
@@ -48,7 +44,6 @@
                     method="POST"
                 >
                     @csrf
-                    @method('DELETE')
 
                     <button type="submit">
                         ♥ Remove Favorite
@@ -68,7 +63,6 @@
 
     @endif
 
-    <br>
+<br>
 
-</body>
-</html>
+@endsection

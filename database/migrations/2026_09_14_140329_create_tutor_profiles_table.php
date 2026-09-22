@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('tutor_profiles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->unique()->constrained('users')->onDelete('cascade');
+            $table->integer('user_id');
             $table->text('bio')->nullable();
-            $table->unsignedInteger('experience_years')->default(0);
+            $table->integer('experience_years')->default(0);
             $table->decimal('average_rating', 3, 2)->default(0.00);
-            $table->enum('teaching_mode', ['online', 'onsite', 'both'])->default('both');
+            $table->string('teaching_mode')->default('both');
             $table->timestamps();
         });
     }

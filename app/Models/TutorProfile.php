@@ -12,13 +12,11 @@ class TutorProfile extends Model
         'user_id',
         'bio',
         'experience_years',
-        'hourly_rate',
-        'total_teaching_hours',
         'average_rating',
         'teaching_mode',
     ];
 
-    // ความสัมพันธ์: TutorProfile เป็นของ User 1 คน (ออมสิน)[cite: 1]
+    // ความสัมพันธ์: TutorProfile เป็นของ User 1 คน
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

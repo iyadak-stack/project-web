@@ -6,22 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('favorites', function (Blueprint $table) {
+            // Primary Key
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->morphs('favoritable');
+            // User ที่กด Favorite
+            $table->integer('user_id');
+            // ประเภทของข้อมูลที่ถูก Favorite
+            $table->string('favoritable_type');
+            // ID ของข้อมูลที่ถูก Favorite
+            $table->integer('favoritable_id');
+            // วันที่สร้างและแก้ไขข้อมูล
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('favorites');

@@ -25,7 +25,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/tutor/profile/edit', [TutorController::class, 'editProfile'])
         ->name('tutor.profile.edit');
 
-    Route::put('/tutor/profile', [TutorController::class, 'updateProfile'])
+    Route::post('/tutor/profile', [TutorController::class, 'updateProfile'])
         ->name('tutor.profile.update');
 
 
@@ -36,7 +36,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/tutor/{tutorProfile}/favorite', [FavoriteController::class, 'storeTutor'])
         ->name('tutor.favorite.store');
 
-    Route::delete('/tutor/{tutorProfile}/favorite', [FavoriteController::class, 'destroyTutor'])
+    Route::post('/tutor/{tutorProfile}/favorite/remove', [FavoriteController::class, 'destroyTutor'])
         ->name('tutor.favorite.destroy');
 
 
@@ -99,8 +99,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/student-contacts/{studentId}/edit', [StudentContactController::class, 'edit'])
         ->name('student-contacts.edit');
 
-    Route::put('/student-contacts/{studentId}', [StudentContactController::class, 'update'])
+    Route::post('/student-contacts/{studentId}', [StudentContactController::class, 'update'])
         ->name('student-contacts.update');
 });
+
 
 require __DIR__.'/settings.php';
