@@ -64,9 +64,14 @@ class User extends Authenticatable implements PasskeyUser
     }
 
     public function tutorProfile(): HasOne
-{
-    return $this->hasOne(TutorProfile::class);
-}
+    {
+        return $this->hasOne(TutorProfile::class);
+    }
+
+    public function studentProfile(): HasOne
+    {
+        return $this->hasOne(StudentProfile::class);
+    }
 
 // 2. รายการ Favorite ทั้งหมดที่ User คนนี้กดเซฟไว้[cite: 1]
     public function favorites(): HasMany

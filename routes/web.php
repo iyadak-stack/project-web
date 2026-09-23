@@ -8,6 +8,8 @@ use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\StudentContactController;
+use App\Http\Controllers\StudentProfileController;
+use App\Http\Controllers\RoleController;
 
 Route::get('/', [TutorController::class, 'home'])->name('home');
 
@@ -20,12 +22,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // =========================
 
     Route::get('/tutor/profile', [TutorController::class, 'profile'])
+        ->middleware('role:tutor')
         ->name('tutor.profile');
 
     Route::get('/tutor/profile/edit', [TutorController::class, 'editProfile'])
+        ->middleware('role:tutor')
         ->name('tutor.profile.edit');
 
     Route::post('/tutor/profile', [TutorController::class, 'updateProfile'])
+        ->middleware('role:tutor')
         ->name('tutor.profile.update');
 
 
@@ -91,6 +96,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])
         ->name('notifications.destroy');
 
+    // =========================
+    // Student Profile
+    // =========================
+
+    Route::get('/student/profile', [StudentProfileController::class, 'profile'])
+        ->middleware('role:student')
+        ->name('student.profile');
+
+    Route::get('/student/profile/edit', [StudentProfileController::class, 'editProfile'])
+        ->middleware('role:student')
+        ->name('student.profile.edit');
+
+    Route::post('/student/profile', [StudentProfileController::class, 'updateProfile'])
+        ->middleware('role:student')
+        ->name('student.profile.update');
 
     // =========================
     // Student Contacts
@@ -101,6 +121,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/student-contacts/{studentId}', [StudentContactController::class, 'update'])
         ->name('student-contacts.update');
+
+    Route::post('/switch-role', [RoleController::class, 'switchRole'])
+        ->name('role.switch');
 });
 
 
