@@ -4,65 +4,81 @@
 
 @section('content')
 
-    <h1>Favorite Tutors</h1>
+    <div class="favorites-header">
+        <h1>Favorite Tutors</h1>
+        <p>
+            Tutors you have saved to your favorites.
+        </p>
+    </div>
 
     @if ($favorites->count() > 0)
+        <div class="row g-4">
+            @foreach ($favorites as $favorite)
+                @php
+                    $tutor = $favorite->favoritable;
+                @endphp
 
-        @foreach ($favorites as $favorite)
+                <div class="col-md-6 col-lg-4">
+                    <div class="card favorite-card h-100">
+                        <div class="card-body">
+                            <h2 class="tutor-name">{{ $tutor->user->name ?? 'Unknown Tutor' }}</h2>
 
-            @php
-                $tutor = $favorite->favoritable;
-            @endphp
+                            <div class="tutor-info">
+                                <strong>Rating</strong>
 
-            <div>
-                <h2>
-                    {{ $tutor->user->name ?? 'Unknown Tutor' }}
-                </h2>
+                                <span>
+                                    {{ number_format($tutor->average_rating, 2) }} / 5.00
+                                </span>
+                            </div>
 
-                <p>
-                    Bio:
-                    {{ $tutor->bio ?? 'No bio available' }}
-                </p>
+                            <div class="tutor-info">
+                                <strong>Experience</strong>
 
-                <p>
-                    Experience:
-                    {{ $tutor->experience_years }} years
-                </p>
+                                <span>
+                                    {{ $tutor->experience_years }} years
+                                </span>
+                            </div>
 
-                <p>
-                    Rating:
-                    {{ $tutor->average_rating }}
-                </p>
+                            <div class="tutor-info">
+                                <strong>Teaching Mode</strong>
 
-                <p>
-                    Teaching Mode:
-                    {{ $tutor->teaching_mode }}
-                </p>
+                                <span>
+                                    {{ ucfirst($tutor->teaching_mode) }}
+                                </span>
+                            </div>
 
-                <form
-                    action="{{ route('tutor.favorite.destroy', $tutor) }}"
-                    method="POST"
-                >
-                    @csrf
+                            <div class="tutor-bio">
+                                <strong>Bio</strong>
+                                <p>
+                                    {{ $tutor->bio ?? 'No bio available.' }}
+                                </p>
+                            </div>
 
-                    <button type="submit">
-                        ♥ Remove Favorite
-                    </button>
-                </form>
-            </div>
+                            <div class="favorite-actions">
+                                <a href="{{ route('tutor.show', $tutor) }}" class="btn btn-primary">View Tutor</a>
 
-            <hr>
+                                <form action="{{ route('tutor.favorite.destroy', $tutor) }}" method="POST">
+                                    @csrf
 
-        @endforeach
-
+                                    <button type="submit" class="btn btn-outline-danger">
+                                        Remove Favorite
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
     @else
+        <div class="empty-favorites">
+            <h2>No Favorite Tutors</h2>
+            <p>
+                ยังไม่มีติวเตอร์ที่ Favorite
+            </p>
 
-        <p>
-            ยังไม่มีติวเตอร์ที่ Favorite
-        </p>
-
+            <a href="{{ route('tutor.search') }}" class="btn btn-primary">Search Tutor</a>
+        </div>
     @endif
-
-<br>
 
 @endsection
