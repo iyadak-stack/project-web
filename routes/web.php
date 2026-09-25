@@ -4,29 +4,20 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\StudentContactController;
 
-Route::view('/', 'welcome')->name('home');
+// เส้นทางสำหรับ วิชาที่สอน (Subject)
+Route::get('/subjects', [SubjectController::class, 'index']);
+Route::post('/subjects', [SubjectController::class, 'store']);
+Route::put('/subjects/{id}', [SubjectController::class, 'update']);
+Route::delete('/subjects/{id}', [SubjectController::class, 'destroy']);
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::view('dashboard', 'dashboard')->name('dashboard');
+// เส้นทางสำหรับ การนัดหมาย (Appointment)
+Route::get('/appointments', [AppointmentController::class, 'index'])->name('appointments.index');
+Route::get('/appointments/create', [AppointmentController::class, 'create'])->name('appointments.create');
+Route::post('/appointments', [AppointmentController::class, 'store'])->name('appointments.store');
+Route::get('/appointments/{id}', [AppointmentController::class, 'show'])->name('appointments.show');
+Route::post('/appointments/{id}/status', [AppointmentController::class, 'updateStatus']);
 
-    // ===== จัดการรายวิชา =====
-    Route::resource('subjects', SubjectController::class);
-
-    // ===== การนัดหมาย =====
-    Route::resource('appointments', AppointmentController::class)->except(['edit', 'update']);
-    Route::post('/appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])->name('appointments.confirm');
-    Route::post('/appointments/{appointment}/reschedule', [AppointmentController::class, 'reschedule'])->name('appointments.reschedule');
-    Route::post('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel'])->name('appointments.cancel');
-
-    // ===== ระบบแจ้งเตือน =====
-    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
-    Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
-
-    // ===== ข้อมูลติดต่อของนักเรียน =====
-    Route::get('/student-contacts/{studentId}/edit', [StudentContactController::class, 'edit'])->name('student-contacts.edit');
-    Route::put('/student-contacts/{studentId}', [StudentContactController::class, 'update'])->name('student-contacts.update');
-});
-
-require __DIR__.'/settings.php';
+// เส้นทางสำหรับ การแจ้งเตือน (Notification)
+Route::get('/notifications', [NotificationController::class, 'index']);
+Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);

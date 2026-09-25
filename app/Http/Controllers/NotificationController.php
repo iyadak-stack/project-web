@@ -3,24 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
+use Illuminate\Http\Request;
 
 class NotificationController extends Controller
 {
     // แสดงรายการแจ้งเตือนทั้งหมด
     public function index()
     {
-        $notifications = Notification::with('appointment')
-            ->latest()
-            ->get();
+        // สมมุติใช้ User ID = 'U001'
+        $userId = 'U001'; 
+        
+        $notifications = Notification::where('Users_user_id', $userId)
+                            ->orderBy('created_at', 'desc')
+                            ->get();
 
         return view('notifications.index', compact('notifications'));
     }
 
-    // ลบแจ้งเตือน (ถ้าต้องการ)
-    public function destroy(Notification $notification)
+    // กดอ่านแจ้งเตือน
+    public function markAsRead($id)
     {
-        $notification->delete();
+        $notification = Notification::findOrFail($id);
+        $notification->is_read = 1;
+        $notification->save();
 
-        return back()->with('success', 'ลบการแจ้งเตือนสำเร็จ');
+        return redirect()->back();
     }
 }
