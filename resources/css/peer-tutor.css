@@ -9,7 +9,7 @@ body {
     padding: 28px 40px;
 }
 
-
+/* Common Card */
 
 .profile-card,
 .tutor-card,
@@ -20,7 +20,7 @@ body {
     border-radius: 10px;
 }
 
-
+/* Common Hover Card */
 
 .tutor-card,
 .subject-card,
@@ -39,7 +39,7 @@ body {
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
-
+/* Common Section Title */
 
 .section-title {
     font-size: 21px;
@@ -47,7 +47,7 @@ body {
     margin-bottom: 20px;
 }
 
-
+/* Common Back Link */
 
 .back-link {
     color: #333;
@@ -60,7 +60,7 @@ body {
     color: #0d6efd;
 }
 
-
+/* Common Empty State */
 
 .empty-favorites,
 .empty-ranking {
@@ -84,7 +84,10 @@ body {
     margin-bottom: 20px;
 }
 
-
+/* ========================================
+   3. Navbar
+   Shared - ทุกคนสามารถใช้ได้
+======================================== */
 
 .peer-navbar {
     width: 100%;
@@ -162,6 +165,9 @@ body {
     color: #0d6efd;
 }
 
+/* ========================================
+   4. Home
+======================================== */
 
 .home-hero {
     background-color: #f8f9fa;
@@ -260,7 +266,9 @@ body {
     border-radius: 10px;
 }
 
-
+/* ========================================
+   5. Search
+======================================== */
 
 .search-header {
     margin-bottom: 25px;
@@ -300,7 +308,7 @@ body {
     margin-bottom: 50px;
 }
 
-
+/* Search-specific Section Title */
 
 .search-section-title {
     display: flex;
@@ -365,7 +373,9 @@ body {
     margin-top: 20px;
 }
 
-
+/* ========================================
+   6. Tutor Details
+======================================== */
 
 .profile-header {
     margin-bottom: 30px;
@@ -454,7 +464,9 @@ body {
     padding-bottom: 20px;
 }
 
-
+/* ========================================
+   7. Favorites
+======================================== */
 
 .favorites-header {
     margin-bottom: 30px;
@@ -482,7 +494,9 @@ body {
     width: 100%;
 }
 
-
+/* ========================================
+   8. Tutor Ranking
+======================================== */
 
 .ranking-header {
     margin-bottom: 30px;
@@ -560,13 +574,17 @@ body {
     white-space: nowrap;
 }
 
-
+/* ========================================
+   9. Tutor Profile
+======================================== */
 
 .profile-actions {
     margin-top: 24px;
 }
 
-
+/* ========================================
+   10. Responsive
+======================================== */
 
 @media (max-width: 768px) {
 
@@ -609,4 +627,3 @@ body {
         grid-template-columns: 1fr;
     }
 }
-

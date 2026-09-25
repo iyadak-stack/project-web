@@ -13,6 +13,9 @@ use Illuminate\Support\Str;
 use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
 
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 /**
  * @property int $id
  * @property string $name
@@ -26,7 +29,6 @@ use Laravel\Fortify\PasskeyAuthenticatable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-
 class User extends Authenticatable implements PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
@@ -77,5 +79,23 @@ class User extends Authenticatable implements PasskeyUser
         return Str::length($initials) > 1
             ? Str::substr($initials, 0, 1).Str::substr($initials, -1)
             : $initials;
+    }
+
+    // ความสัมพันธ์กับโปรไฟล์ติวเตอร์
+    public function tutorProfile(): HasOne
+    {
+        return $this->hasOne(TutorProfile::class, 'Users_user_id', 'user_id');
+    }
+
+    // ความสัมพันธ์กับโปรไฟล์นักเรียน
+    public function studentProfile(): HasOne
+    {
+        return $this->hasOne(StudentProfile::class, 'Users_user_id', 'user_id');
+    }
+
+    // รายการ Favorite ทั้งหมดที่ User คนนี้กดเซฟไว้
+    public function favorites(): HasMany
+    {
+        return $this->hasMany(Favorite::class, 'Users_user_id', 'user_id');
     }
 }
