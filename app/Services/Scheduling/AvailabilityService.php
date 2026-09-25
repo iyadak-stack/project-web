@@ -84,6 +84,6 @@ class AvailabilityService
             $query->where('status', '!=', 'cancelled');
         }
 
-        return $query->orderBy('appointment_datetime')->get()->all();
+        return $query->orderBy('start_datetime')->get()->all();
     }
 }
