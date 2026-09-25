@@ -14,7 +14,6 @@ class CheckScheduleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'student_id' => ['required', 'string', 'size:10'],
             'tutor_id' => ['required', 'string', 'size:10'],
             'start_datetime' => ['required', 'date'],
             'end_datetime' => ['required', 'date', 'after:start_datetime'],

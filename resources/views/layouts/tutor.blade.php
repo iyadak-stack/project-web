@@ -9,7 +9,9 @@
         PeerTutor: @yield('title', 'Home')
     </title>
 
-    @vite(['resources/css/app.css', 'resources/css/peer-tutor.css'])
+    @vite('resources/css/app.css')
+
+    <link rel="stylesheet" href="{{ asset('css/peer-tutor.css') }}">
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -20,12 +22,19 @@
 </head>
 
 <body>
-  
+
     <x-tutor-navbar />
 
     <main class="page-content">
         @yield('content')
     </main>
+
+    <footer class="peer-footer">
+        <hr>
+        <p>
+            © {{ date('Y') }} PeerTutor.
+        </p>
+    </footer>
 
     <script
         src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js">

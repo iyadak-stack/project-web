@@ -6,6 +6,7 @@ use App\Models\TutorProfile;
 use App\Models\Subject;
 use App\Models\Favorite;
 use Illuminate\Http\Request;
+use App\Models\Availability;
 
 class TutorController extends Controller
 {
@@ -142,6 +143,14 @@ class TutorController extends Controller
     {
         $tutorProfile->load(['user', 'subjects']);
 
+        $availabilities = Availability::where(
+            'user_id',
+            $tutorProfile->user_id
+        )
+            ->where('start_datetime', '>=', now())
+            ->orderBy('start_datetime')
+            ->get();
+
         $isFavorite = Favorite::where('user_id', auth()->id())
             ->where('favoritable_type', TutorProfile::class)
             ->where('favoritable_id', $tutorProfile->id)
@@ -149,6 +158,7 @@ class TutorController extends Controller
 
         return view('tutor.show', compact(
             'tutorProfile',
+            'availabilities',
             'isFavorite'
         ));
     }

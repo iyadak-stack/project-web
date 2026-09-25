@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\TutorController;
 use App\Http\Controllers\FavoriteController;
+use App\Http\Controllers\AvailabilityController;
+use App\Http\Controllers\CheckScheduleController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\NotificationController;
@@ -85,7 +87,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel'])
         ->name('appointments.cancel');
 
+    Route::get('/availabilities', [AvailabilityController::class, 'index'])->name('availabilities.index');
+    Route::post('/availabilities', [AvailabilityController::class, 'store'])->name('availabilities.store');
+    Route::get('/availabilities/history', [AvailabilityController::class, 'history'])->name('availabilities.history');
+    Route::get('/availabilities/{availability}/edit', [AvailabilityController::class, 'edit'])->name('availabilities.edit');
+    Route::put('/availabilities/{availability}', [AvailabilityController::class, 'update'])->name('availabilities.update');
+    Route::delete('/availabilities/{availability}', [AvailabilityController::class, 'destroy'])->name('availabilities.destroy');
 
+    Route::get('/schedule/check', [CheckScheduleController::class, 'index'])->name('schedule.check');
+    Route::post('/schedule/check', [CheckScheduleController::class, 'check'])->name('schedule.check.results');
     // =========================
     // Notifications
     // =========================
