@@ -1,35 +1,34 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
     <meta charset="UTF-8">
     <title>การแจ้งเตือน</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
-<body>
-    <h1>การแจ้งเตือน</h1>
+<body class="p-4">
+    <div class="container">
+        <h2>การแจ้งเตือนของคุณ</h2>
 
-    <table border="1">
-        <tr>
-            <th>ประเภท</th>
-            <th>ข้อความ</th>
-            <th>เวลา</th>
-            <th>จัดการ</th>
-        </tr>
-        @forelse ($notifications as $notification)
-            <tr>
-                <td>{{ $notification->notification_type }}</td>
-                <td>{{ $notification->message }}</td>
-                <td>{{ $notification->created_at }}</td>
-                <td>
-                    <form action="{{ route('notifications.destroy', $notification) }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit">ลบ</button>
-                    </form>
-                </td>
-            </tr>
-        @empty
-            <tr><td colspan="4">ยังไม่มีการแจ้งเตือน</td></tr>
-        @endforelse
-    </table>
+        <ul class="list-group mt-3">
+            @forelse($notifications as $notif)
+                <li class="list-group-item d-flex justify-content-between align-items-center {{ $notif->is_read ? 'bg-light' : '' }}">
+                    <div>
+                        <p class="mb-1">{{ $notif->message }}</p>
+                        <small class="text-muted">{{ $notif->created_at }}</small>
+                    </div>
+                    @if(!$notif->is_read)
+                        <form action="{{ url('/notifications/'.$notif->notification_id.'/read') }}" method="POST">
+                            @csrf
+                            <button class="btn btn-sm btn-outline-primary">ทำเครื่องหมายว่าอ่านแล้ว</button>
+                        </form>
+                    @else
+                        <span class="badge bg-secondary">อ่านแล้ว</span>
+                    @endif
+                </li>
+            @empty
+                <li class="list-group-item text-center">ไม่มีข้อความแจ้งเตือน</li>
+            @endforelse
+        </ul>
+    </div>
 </body>
 </html>

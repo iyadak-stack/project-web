@@ -1,46 +1,43 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>สร้างนัดหมายใหม่</title>
+    <title>จองนัดหมายเรียน</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
-<body>
-    <h1>สร้างนัดหมายใหม่</h1>
+<body class="p-4">
+    <div class="container">
+        <h2>จองนัดหมายเรียน</h2>
 
-    <form action="{{ route('appointments.store') }}" method="POST">
-        @csrf
+        <form action="{{ route('appointments.store') }}" method="POST">
+            @csrf
+            <div class="mb-3">
+                <label>เลือกวิชาที่ต้องการเรียน:</label>
+                <select name="subject_id" class="form-control" required>
+                    <option value="">-- เลือกวิชา --</option>
+                    @foreach($subjects as $sub)
+                        <option value="{{ $sub->subject_id }}">{{ $sub->subject_name }}</option>
+                    @endforeach
+                </select>
+            </div>
 
-        <label>รหัสนักเรียน (student_id):</label><br>
-        <input type="number" name="student_id" value="{{ old('student_id') }}"><br>
-        @error('student_id') <p>{{ $message }}</p> @enderror
+            <div class="mb-3">
+                <label>วัน-เวลา เริ่มต้น:</label>
+                <input type="datetime-local" name="start_datetime" class="form-control" required>
+            </div>
 
-        <label>รหัสติวเตอร์ (tutor_id):</label><br>
-        <input type="number" name="tutor_id" value="{{ old('tutor_id') }}"><br>
-        @error('tutor_id') <p>{{ $message }}</p> @enderror
+            <div class="mb-3">
+                <label>วัน-เวลา สิ้นสุด:</label>
+                <input type="datetime-local" name="end_datetime" class="form-control" required>
+            </div>
 
-        <label>รหัสวิชา (subject_id):</label><br>
-        <input type="number" name="subject_id" value="{{ old('subject_id') }}"><br>
-        @error('subject_id') <p>{{ $message }}</p> @enderror
+            <!-- ค่าสมมุติตามไอดี นศ. -->
+            <input type="hidden" name="tutor_id" value="T001">
+            <input type="hidden" name="student_id" value="S001">
 
-        <label>รูปแบบ:</label><br>
-        <select name="mode">
-            <option value="online">ออนไลน์</option>
-            <option value="onsite">ออนไซต์</option>
-        </select><br>
-        @error('mode') <p>{{ $message }}</p> @enderror
-
-        <label>รหัสสถานที่ (location_id) — ใส่เมื่อออนไซต์เท่านั้น:</label><br>
-        <input type="number" name="location_id" value="{{ old('location_id') }}"><br>
-        @error('location_id') <p>{{ $message }}</p> @enderror
-
-        <label>วันเวลานัดหมาย:</label><br>
-        <input type="datetime-local" name="appointment_datetime" value="{{ old('appointment_datetime') }}"><br>
-        @error('appointment_datetime') <p>{{ $message }}</p> @enderror
-
-        <br>
-        <button type="submit">สร้างนัดหมาย</button>
-    </form>
-
-    <a href="{{ route('appointments.index') }}">กลับ</a>
+            <button type="submit" class="btn btn-primary">บันทึกการจอง</button>
+            <a href="{{ route('appointments.index') }}" class="btn btn-secondary">ยกเลิก</a>
+        </form>
+    </div>
 </body>
 </html>

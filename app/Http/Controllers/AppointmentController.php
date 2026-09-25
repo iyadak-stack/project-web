@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\Subject;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 
@@ -11,94 +12,76 @@ class AppointmentController extends Controller
     // แสดงรายการนัดหมายทั้งหมด
     public function index()
     {
-        $appointments = Appointment::with(['subject', 'location'])->get();
+        $appointments = Appointment::with('subject')->orderBy('created_at', 'desc')->get();
         return view('appointments.index', compact('appointments'));
     }
 
-    // แสดงฟอร์มสร้างนัดใหม่
+    // หน้าฟอร์มสร้างการนัดหมาย
     public function create()
     {
-        return view('appointments.create');
+        $subjects = Subject::all();
+        return view('appointments.create', compact('subjects'));
     }
 
-    // บันทึกนัดหมายใหม่
+    // บันทึกการนัดหมายใหม่
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'student_id' => 'required|integer',
-            'tutor_id' => 'required|integer',
-            'subject_id' => 'required|exists:subjects,id',
-            'location_id' => 'nullable|exists:locations,id',
-            'mode' => 'required|in:online,onsite',
-            'appointment_datetime' => 'required|date|after:now',
+        $request->validate([
+            'subject_id' => 'required',
+            'start_datetime' => 'required|date',
+            'end_datetime' => 'required|date|after:start_datetime',
+            'tutor_id' => 'required',
+            'student_id' => 'required',
         ]);
 
-        $validated['status'] = 'pending';
+        // สุ่ม ID ง่ายๆ แบบนักศึกษาทำ
+        $appointmentId = 'APP' . rand(100, 999);
 
-        Appointment::create($validated);
+        $appointment = Appointment::create([
+            'Appointment_id' => $appointmentId,
+            'status' => 'pending',
+            'start_datetime' => $request->start_datetime,
+            'end_datetime' => $request->end_datetime,
+            'Subject_subject_id' => $request->subject_id,
+            'Tutor_profiles_tutor_id' => $request->tutor_id,
+            'Student_profiles_student_id' => $request->student_id,
+        ]);
 
-        return redirect()->route('appointments.index')->with('success', 'สร้างนัดหมายสำเร็จ');
+        // แจ้งเตือนไปยัง ติวเตอร์
+        Notification::create([
+            'notification_id' => 'NOT' . rand(1000, 9999),
+            'message' => 'มีการจองนัดหมายใหม่รอยืนยัน',
+            'is_read' => 0,
+            'Users_user_id' => $request->tutor_id,
+            'NotificationType_notification_type_id' => 'TYPE01', // สมมุติตัวอย่าง ID ประเภทแจ้งเตือน
+        ]);
+
+        return redirect()->route('appointments.index')->with('success', 'สร้างรายการนัดหมายสำเร็จ');
     }
 
-    // แสดงรายละเอียดนัดหมาย 1 รายการ
-    public function show(Appointment $appointment)
+    // ดูรายละเอียดนัดหมาย
+    public function show($id)
     {
+        $appointment = Appointment::with('subject')->findOrFail($id);
         return view('appointments.show', compact('appointment'));
     }
 
-    // ยืนยันนัดหมาย
-    public function confirm(Appointment $appointment)
+    // อัปเดตสถานะ (ยืนยัน / เลื่อน / ยกเลิก)[cite: 2]
+    public function updateStatus(Request $request, $id)
     {
-        $appointment->update(['status' => 'confirmed']);
+        $appointment = Appointment::findOrFail($id);
+        $appointment->status = $request->status; // 'confirmed', 'cancelled'
+        $appointment->save();
 
+        // แจ้งเตือนเปลี่ยนสถานะ
         Notification::create([
-            'appointment_id' => $appointment->id,
-            'notification_type' => 'confirmed',
-            'message' => 'นัดหมายได้รับการยืนยันแล้ว',
+            'notification_id' => 'NOT' . rand(1000, 9999),
+            'message' => 'สถานะการนัดหมายของคุณเปลี่ยนเป็น: ' . $request->status,
+            'is_read' => 0,
+            'Users_user_id' => $appointment->Student_profiles_student_id,
+            'NotificationType_notification_type_id' => 'TYPE02',
         ]);
 
-        return back()->with('success', 'ยืนยันนัดหมายสำเร็จ');
-    }
-
-    // เลื่อนนัดหมาย
-    public function reschedule(Request $request, Appointment $appointment)
-    {
-        $validated = $request->validate([
-            'appointment_datetime' => 'required|date|after:now',
-        ]);
-
-        $appointment->update([
-            'appointment_datetime' => $validated['appointment_datetime'],
-            'status' => 'rescheduled',
-        ]);
-
-        Notification::create([
-            'appointment_id' => $appointment->id,
-            'notification_type' => 'rescheduled',
-            'message' => 'นัดหมายถูกเลื่อนเวลาแล้ว',
-        ]);
-
-        return back()->with('success', 'เลื่อนนัดหมายสำเร็จ');
-    }
-
-    // ยกเลิกนัดหมาย
-    public function cancel(Appointment $appointment)
-    {
-        $appointment->update(['status' => 'cancelled']);
-
-        Notification::create([
-            'appointment_id' => $appointment->id,
-            'notification_type' => 'cancelled',
-            'message' => 'นัดหมายถูกยกเลิกแล้ว',
-        ]);
-
-        return back()->with('success', 'ยกเลิกนัดหมายสำเร็จ');
-    }
-
-    // ลบนัดหมาย (ถ้าต้องการ)
-    public function destroy(Appointment $appointment)
-    {
-        $appointment->delete();
-        return redirect()->route('appointments.index')->with('success', 'ลบนัดหมายสำเร็จ');
+        return redirect()->back()->with('success', 'อัปเดตสถานะการนัดหมายแล้ว');
     }
 }

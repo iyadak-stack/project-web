@@ -1,41 +1,24 @@
 <!DOCTYPE html>
-<html>
+<html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>รายละเอียดนัดหมาย</title>
+    <title>รายละเอียดการนัดหมาย</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
-<body>
-    <h1>รายละเอียดนัดหมาย</h1>
+<body class="p-4">
+    <div class="container">
+        <h2>รายละเอียดการนัดหมาย</h2>
 
-    @if (session('success'))
-        <p>{{ session('success') }}</p>
-    @endif
+        <div class="card p-3 mb-3">
+            <p><strong>รหัสการนัดหมาย:</strong> {{ $appointment->Appointment_id }}</p>
+            <p><strong>วิชาที่เรียน:</strong> {{ $appointment->subject->subject_name ?? '-' }}</p>
+            <p><strong>เวลานัด:</strong> {{ $appointment->start_datetime }} ถึง {{ $appointment->end_datetime }}</p>
+            <p><strong>สถานะปัจจุบัน:</strong> {{ $appointment->status }}</p>
+            <p><strong>รหัสติวเตอร์:</strong> {{ $appointment->Tutor_profiles_tutor_id }}</p>
+            <p><strong>รหัสนักเรียน:</strong> {{ $appointment->Student_profiles_student_id }}</p>
+        </div>
 
-    <p>วิชา: {{ $appointment->subject->subject_name ?? '-' }}</p>
-    <p>วันเวลา: {{ $appointment->appointment_datetime->format('d/m/Y H:i') }}</p>
-    <p>รูปแบบ: {{ $appointment->mode === 'online' ? 'ออนไลน์' : 'ออนไซต์' }}</p>
-    @if($appointment->location)
-        <p>สถานที่: {{ $appointment->location->location_name }}</p>
-    @endif
-    <p>สถานะ: {{ $appointment->status }}</p>
-
-    <form action="{{ route('appointments.confirm', $appointment) }}" method="POST">
-        @csrf
-        <button type="submit">ยืนยันนัดหมาย</button>
-    </form>
-
-    <form action="{{ route('appointments.cancel', $appointment) }}" method="POST">
-        @csrf
-        <button type="submit">ยกเลิกนัดหมาย</button>
-    </form>
-
-    <form action="{{ route('appointments.reschedule', $appointment) }}" method="POST">
-        @csrf
-        <label>เลื่อนนัดไปวันเวลาใหม่:</label><br>
-        <input type="datetime-local" name="appointment_datetime"><br>
-        <button type="submit">เลื่อนนัด</button>
-    </form>
-
-    <a href="{{ route('appointments.index') }}">กลับ</a>
+        <a href="{{ route('appointments.index') }}" class="btn btn-secondary">ย้อนกลับ</a>
+    </div>
 </body>
 </html>

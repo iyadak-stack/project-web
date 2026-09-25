@@ -7,75 +7,50 @@ use Illuminate\Http\Request;
 
 class SubjectController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    // แสดงรายการวิชาทั้งหมด
     public function index()
     {
         $subjects = Subject::all();
         return view('subjects.index', compact('subjects'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('subjects.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
+    // บันทึกวิชาใหม่
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'tutor_id' => 'required|integer',
-            'subject_name' => 'required|string|max:100',
+        $request->validate([
+            'subject_id' => 'required|unique:subjects,subject_id',
+            'subject_name' => 'required|string|max:45',
         ]);
 
-        Subject::create($validated);
-
-        return redirect()->route('subjects.index')->with('success', 'เพิ่มวิชาสำเร็จ');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    //public function show(string $id)
-    //{
-        //
-    //}
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Subject $subject)
-    {
-        return view('subjects.edit', compact('subject'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Subject $subject)
-    {
-        $validated = $request->validate([
-            'subject_name' => 'required|string|max:100',
+        Subject::create([
+            'subject_id' => $request->subject_id,
+            'subject_name' => $request->subject_name,
         ]);
 
-        $subject->update($validated);
-
-        return redirect()->route('subjects.index')->with('success', 'แก้ไขวิชาสำเร็จ');
+        return redirect()->back()->with('success', 'เพิ่มวิชาเรียบร้อยแล้ว');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Subject $subject)
+    // แก้ไขวิชา
+    public function update(Request $request, $id)
     {
+        $request->validate([
+            'subject_name' => 'required|string|max:45',
+        ]);
+
+        $subject = Subject::findOrFail($id);
+        $subject->update([
+            'subject_name' => $request->subject_name,
+        ]);
+
+        return redirect()->back()->with('success', 'แก้ไขวิชาเรียบร้อยแล้ว');
+    }
+
+    // ลบวิชา
+    public function destroy($id)
+    {
+        $subject = Subject::findOrFail($id);
         $subject->delete();
 
-        return redirect()->route('subjects.index')->with('success', 'ลบวิชาสำเร็จ');
+        return redirect()->back()->with('success', 'ลบวิชาเรียบร้อยแล้ว');
     }
 }

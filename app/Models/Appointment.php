@@ -2,31 +2,32 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Appointment extends Model
 {
+    use HasFactory, SoftDeletes;
+
+    protected $table = 'appointments';
+    protected $primaryKey = 'Appointment_id';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     protected $fillable = [
-        'student_id', 'tutor_id', 'subject_id',
-        'location_id', 'mode', 'appointment_datetime', 'status',
+        'Appointment_id',
+        'status',
+        'start_datetime',
+        'end_datetime',
+        'Subject_subject_id',
+        'Tutor_profiles_tutor_id',
+        'Student_profiles_student_id',
     ];
 
-    protected $casts = [
-        'appointment_datetime' => 'datetime',
-    ];
-
+    // ดึงข้อมูลวิชา
     public function subject()
     {
-        return $this->belongsTo(Subject::class);
-    }
-
-    public function location()
-    {
-        return $this->belongsTo(Location::class);
-    }
-
-    public function notifications()
-    {
-        return $this->hasMany(Notification::class);
+        return $this->belongsTo(Subject::class, 'Subject_subject_id', 'subject_id');
     }
 }
