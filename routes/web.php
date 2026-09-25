@@ -4,7 +4,7 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\CheckScheduleController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\StudentContactController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\SubjectController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,7 +35,7 @@ Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsR
 Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
 
 // ===== ข้อมูลติดต่อของนักเรียน (Student Contacts) =====
-Route::get('/student-contacts/{studentId}/edit', [StudentContactController::class, 'edit'])->name('student-contacts.edit');
-Route::put('/student-contacts/{studentId}', [StudentContactController::class, 'update'])->name('student-contacts.update');
+Route::get('/student-contacts/{studentId}/edit', [ContactController::class, 'edit'])->name('student-contacts.edit');
+Route::put('/student-contacts/{studentId}', [ContactController::class, 'update'])->name('student-contacts.update');
 
 require __DIR__.'/settings.php';
