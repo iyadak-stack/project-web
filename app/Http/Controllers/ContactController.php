@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\StudentContact;
+use App\Models\Contact ;
 use Illuminate\Http\Request;
 
-class StudentContactController extends Controller
+class ContactController extends Controller
 {
     // แสดงฟอร์มกรอก/แก้ไขข้อมูลติดต่อ
     public function edit($studentId)
     {
-        $contact = StudentContact::where('student_id', $studentId)->first();
+        $contact = Contact ::where('student_id', $studentId)->first();
 
         return view('student-contacts.edit', compact('contact', 'studentId'));
     }
@@ -25,7 +25,7 @@ class StudentContactController extends Controller
             'zoom_link' => 'nullable|string|max:255',
         ]);
 
-        StudentContact::updateOrCreate(
+        Contact ::updateOrCreate(
             ['student_id' => $studentId],
             $validated
         );

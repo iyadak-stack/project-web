@@ -4,11 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Favorite;
 use App\Models\TutorProfile;
-use Illuminate\Http\RedirectResponse;
+use App\Models\Subject;
 
 class FavoriteController extends Controller
 {
-    public function storeTutor(TutorProfile $tutorProfile): RedirectResponse
+    // เพิ่ม Tutor เป็นรายการโปรด
+    public function storeTutor(TutorProfile $tutorProfile)
     {
         Favorite::firstOrCreate([
             'user_id' => auth()->id(),
@@ -16,26 +17,63 @@ class FavoriteController extends Controller
             'favoritable_id' => $tutorProfile->id,
         ]);
 
-        return back()->with('success', 'Tutor added to favorites.');
+        return back()->with('success', 'เพิ่มติวเตอร์ในรายการโปรดแล้ว');
     }
 
-    public function destroyTutor(TutorProfile $tutorProfile): RedirectResponse
+    // ลบ Tutor ออกจากรายการโปรด
+    public function destroyTutor(TutorProfile $tutorProfile)
     {
         Favorite::where('user_id', auth()->id())
             ->where('favoritable_type', TutorProfile::class)
             ->where('favoritable_id', $tutorProfile->id)
             ->delete();
 
-        return back()->with('success', 'Tutor removed from favorites.');
+        return back()->with('success', 'ลบติวเตอร์ออกจากรายการโปรดแล้ว');
     }
 
+    // เพิ่ม Subject เป็นรายการโปรด
+    public function storeSubject(Subject $subject)
+    {
+        Favorite::firstOrCreate([
+            'user_id' => auth()->id(),
+            'favoritable_type' => Subject::class,
+            'favoritable_id' => $subject->getKey(),
+        ]);
+
+        return back()->with('success', 'เพิ่มวิชาในรายการโปรดแล้ว');
+    }
+
+    // ลบ Subject ออกจากรายการโปรด
+    public function destroySubject(Subject $subject)
+    {
+        Favorite::where('user_id', auth()->id())
+            ->where('favoritable_type', Subject::class)
+            ->where('favoritable_id', $subject->getKey())
+            ->delete();
+
+        return back()->with('success', 'ลบวิชาออกจากรายการโปรดแล้ว');
+    }
+
+    // แสดงรายการโปรดทั้งหมด
     public function tutorFavorites()
     {
         $favorites = Favorite::where('user_id', auth()->id())
-            ->where('favoritable_type', TutorProfile::class)
-            ->with('favoritable.user')
+            ->with('favoritable')
             ->get();
 
-        return view('tutor.favorites', compact('favorites'));
+        $tutorFavorites = $favorites->where(
+            'favoritable_type',
+            TutorProfile::class
+        );
+
+        $subjectFavorites = $favorites->where(
+            'favoritable_type',
+            Subject::class
+        );
+
+        return view('tutor.favorites', compact(
+            'tutorFavorites',
+            'subjectFavorites'
+        ));
     }
 }

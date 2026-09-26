@@ -1,19 +1,29 @@
 @extends('layouts.tutor')
 
-@section('title', 'Favorite Tutors')
+@section('title', 'Favorites')
 
 @section('content')
 
-    <div class="favorites-header">
-        <h1>Favorite Tutors</h1>
-        <p>
-            Tutors you have saved to your favorites.
-        </p>
-    </div>
+<div class="favorites-header">
+    <h1>My Favorites</h1>
+    <p>ติวเตอร์และวิชาที่คุณบันทึกไว้</p>
+</div>
 
-    @if ($favorites->count() > 0)
+@if (session('success'))
+    <p class="success-message">
+        {{ session('success') }}
+    </p>
+@endif
+
+
+{{-- Favorite Tutors --}}
+<section class="favorite-section">
+
+    <h2>Favorite Tutors</h2>
+
+    @if ($tutorFavorites->count() > 0)
         <div class="row g-4">
-            @foreach ($favorites as $favorite)
+            @foreach ($tutorFavorites as $favorite)
                 @php
                     $tutor = $favorite->favoritable;
                 @endphp
@@ -21,64 +31,100 @@
                 <div class="col-md-6 col-lg-4">
                     <div class="card favorite-card h-100">
                         <div class="card-body">
-                            <h2 class="tutor-name">{{ $tutor->user->name ?? 'Unknown Tutor' }}</h2>
+                            <h3 class="tutor-name">
+                                {{ $tutor->user->name }}
+                            </h3>
 
-                            <div class="tutor-info">
-                                <strong>Rating</strong>
+                            <p>
+                                Rating:
+                                {{ number_format($tutor->average_rating, 2) }}
+                            </p>
 
-                                <span>
-                                    {{ number_format($tutor->average_rating, 2) }} / 5.00
-                                </span>
-                            </div>
+                            <p>
+                                Experience:
+                                {{ $tutor->experience_years }} years
+                            </p>
 
-                            <div class="tutor-info">
-                                <strong>Experience</strong>
-
-                                <span>
-                                    {{ $tutor->experience_years }} years
-                                </span>
-                            </div>
-
-                            <div class="tutor-info">
-                                <strong>Teaching Mode</strong>
-
-                                <span>
-                                    {{ ucfirst($tutor->teaching_mode) }}
-                                </span>
-                            </div>
-
-                            <div class="tutor-bio">
-                                <strong>Bio</strong>
-                                <p>
-                                    {{ $tutor->bio ?? 'No bio available.' }}
-                                </p>
-                            </div>
-
-                            <div class="favorite-actions">
-                                <a href="{{ route('tutor.show', $tutor) }}" class="btn btn-primary">View Tutor</a>
-
-                                <form action="{{ route('tutor.favorite.destroy', $tutor) }}" method="POST">
-                                    @csrf
-
-                                    <button type="submit" class="btn btn-outline-danger">
-                                        Remove Favorite
-                                    </button>
-                                </form>
-                            </div>
+                            <a
+                                href="{{ route('tutor.show', $tutor) }}"
+                                class="btn btn-primary"
+                            >
+                                View Tutor
+                            </a>
+                            <form
+                                action="{{ route('tutor.favorite.destroy', $tutor) }}"
+                                method="POST"
+                                class="mt-2"
+                            >
+                                @csrf
+                                <button
+                                    type="submit"
+                                    class="btn btn-outline-danger"
+                                >
+                                    Remove Favorite
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
             @endforeach
         </div>
     @else
-        <div class="empty-favorites">
-            <h2>No Favorite Tutors</h2>
-            <p>
-                ยังไม่มีติวเตอร์ที่ Favorite
-            </p>
-
-            <a href="{{ route('tutor.search') }}" class="btn btn-primary">Search Tutor</a>
-        </div>
+        <p>ยังไม่มีติวเตอร์ในรายการโปรด</p>
     @endif
+</section>
+
+
+{{-- Favorite Subjects --}}
+<section class="favorite-section">
+
+    <h2>Favorite Subjects</h2>
+    @if ($subjectFavorites->count() > 0)
+        <div class="row g-4">
+            @foreach ($subjectFavorites as $favorite)
+                @php
+                    $subject = $favorite->favoritable;
+                @endphp
+
+                <div class="col-md-6 col-lg-4">
+                    <div class="card favorite-card h-100">
+                        <div class="card-body">
+                            <h3 class="subject-name">{{ $subject->subject_name }}</h3>
+                            <p>
+                                Tutors:
+                                {{ $subject->tutors->count() }}
+                            </p>
+
+                            <a
+                                href="{{ route('tutor.search', ['search' => $subject->subject_name]) }}"
+                                class="btn btn-primary"
+                            >
+                                Find Tutors
+                            </a>
+
+                            <form
+                                action="{{ route('subject.favorite.destroy', $subject) }}"
+                                method="POST"
+                                class="mt-2"
+                            >
+                                @csrf
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-outline-danger"
+                                >
+                                    Remove Favorite
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+    @else
+        <p>ยังไม่มีวิชาในรายการโปรด</p>
+    @endif
+
+</section>
 
 @endsection

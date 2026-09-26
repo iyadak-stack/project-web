@@ -9,18 +9,21 @@ use App\Http\Controllers\CheckScheduleController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\StudentContactController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\RoleController;
 
+
 Route::get('/', [TutorController::class, 'home'])->name('home');
+
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::view('dashboard', 'dashboard')->name('dashboard');
 
+
     // =========================
-    // Tutor Profile
+    // โปรไฟล์ติวเตอร์ (Tutor Profile)
     // =========================
 
     Route::get('/tutor/profile', [TutorController::class, 'profile'])
@@ -37,18 +40,30 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
     // =========================
-    // Tutor Favorite
+    // รายการโปรด (Favorite)
     // =========================
 
+    // Favorite Tutor
     Route::post('/tutor/{tutorProfile}/favorite', [FavoriteController::class, 'storeTutor'])
         ->name('tutor.favorite.store');
 
     Route::post('/tutor/{tutorProfile}/favorite/remove', [FavoriteController::class, 'destroyTutor'])
         ->name('tutor.favorite.destroy');
 
+    // หน้า Favorite
+    Route::get('/tutors/favorites', [FavoriteController::class, 'tutorFavorites'])
+        ->name('tutor.favorites');
+
+    // Favorite Subject
+    Route::post('/subject/{subject}/favorite', [FavoriteController::class, 'storeSubject'])
+        ->name('subject.favorite.store');
+
+    Route::post('/subject/{subject}/favorite/remove', [FavoriteController::class, 'destroySubject'])
+        ->name('subject.favorite.destroy');
+
 
     // =========================
-    // Search / Ranking / Tutor
+    // ค้นหา / จัดอันดับติวเตอร์
     // =========================
 
     Route::get('/tutors', [TutorController::class, 'search'])
@@ -57,26 +72,60 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/tutors/ranking', [TutorController::class, 'ranking'])
         ->name('tutor.ranking');
 
-    Route::get('/tutors/favorites', [FavoriteController::class, 'tutorFavorites'])
-        ->name('tutor.favorites');
-
     Route::get('/tutors/{tutorProfile}', [TutorController::class, 'show'])
         ->name('tutor.show');
 
 
     // =========================
-    // Subjects
+    // จัดการรายวิชา (Subjects)
     // =========================
 
     Route::resource('subjects', SubjectController::class);
 
 
     // =========================
-    // Appointments
+    // ตารางเวลาและความพร้อม
+    // (Availability & Schedule Check)
+    // =========================
+
+    Route::get('/availabilities', [AvailabilityController::class, 'index'])
+        ->name('availabilities.index');
+
+    Route::get('/availabilities/create', [AvailabilityController::class, 'create'])
+        ->name('availabilities.create');
+
+    Route::post('/availabilities', [AvailabilityController::class, 'store'])
+        ->name('availabilities.store');
+
+    Route::get('/availabilities/history', [AvailabilityController::class, 'history'])
+        ->name('availabilities.history');
+
+    Route::get('/availabilities/{availability}/edit', [AvailabilityController::class, 'edit'])
+        ->name('availabilities.edit');
+
+    Route::put('/availabilities/{availability}', [AvailabilityController::class, 'update'])
+        ->name('availabilities.update');
+
+    Route::delete('/availabilities/{availability}', [AvailabilityController::class, 'destroy'])
+        ->name('availabilities.destroy');
+
+
+    // Check Schedule
+    Route::get('/schedule/check', [CheckScheduleController::class, 'index'])
+        ->name('schedule.check');
+
+    Route::post('/schedule/check', [CheckScheduleController::class, 'check'])
+        ->name('schedule.check.results');
+
+
+    // =========================
+    // การนัดหมาย (Appointments)
     // =========================
 
     Route::resource('appointments', AppointmentController::class)
         ->except(['edit', 'update']);
+
+    Route::post('/appointments/{id}/status', [AppointmentController::class, 'updateStatus']);
 
     Route::post('/appointments/{appointment}/confirm', [AppointmentController::class, 'confirm'])
         ->name('appointments.confirm');
@@ -87,27 +136,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/appointments/{appointment}/cancel', [AppointmentController::class, 'cancel'])
         ->name('appointments.cancel');
 
-    Route::get('/availabilities', [AvailabilityController::class, 'index'])->name('availabilities.index');
-    Route::post('/availabilities', [AvailabilityController::class, 'store'])->name('availabilities.store');
-    Route::get('/availabilities/history', [AvailabilityController::class, 'history'])->name('availabilities.history');
-    Route::get('/availabilities/{availability}/edit', [AvailabilityController::class, 'edit'])->name('availabilities.edit');
-    Route::put('/availabilities/{availability}', [AvailabilityController::class, 'update'])->name('availabilities.update');
-    Route::delete('/availabilities/{availability}', [AvailabilityController::class, 'destroy'])->name('availabilities.destroy');
 
-    Route::get('/schedule/check', [CheckScheduleController::class, 'index'])->name('schedule.check');
-    Route::post('/schedule/check', [CheckScheduleController::class, 'check'])->name('schedule.check.results');
     // =========================
-    // Notifications
+    // ระบบแจ้งเตือน (Notifications)
     // =========================
 
     Route::get('/notifications', [NotificationController::class, 'index'])
         ->name('notifications.index');
 
+    Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead']);
+
     Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])
         ->name('notifications.destroy');
 
+
     // =========================
-    // Student Profile
+    // โปรไฟล์นักเรียน (Student Profile)
     // =========================
 
     Route::get('/student/profile', [StudentProfileController::class, 'profile'])
@@ -122,15 +166,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('role:student')
         ->name('student.profile.update');
 
+
     // =========================
-    // Student Contacts
+    // ข้อมูลติดต่อของนักเรียน
+    // (Student Contacts)
     // =========================
 
-    Route::get('/student-contacts/{studentId}/edit', [StudentContactController::class, 'edit'])
+    Route::get('/student-contacts/{studentId}/edit', [ContactController::class, 'edit'])
         ->name('student-contacts.edit');
 
-    Route::post('/student-contacts/{studentId}', [StudentContactController::class, 'update'])
+    Route::put('/student-contacts/{studentId}', [ContactController::class, 'update'])
         ->name('student-contacts.update');
+
+
+    // =========================
+    // สลับบทบาทผู้ใช้ (Role Switching)
+    // =========================
 
     Route::post('/switch-role', [RoleController::class, 'switchRole'])
         ->name('role.switch');

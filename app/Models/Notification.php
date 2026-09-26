@@ -2,14 +2,28 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Notification extends Model
 {
-    protected $fillable = ['appointment_id', 'notification_type', 'message'];
+    use HasFactory;
 
-    public function appointment()
+    protected $table = 'notifications';
+    protected $primaryKey = 'notification_id';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
+    protected $fillable = [
+        'notification_id',
+        'message',
+        'is_read',
+        'Users_user_id',
+        'NotificationType_notification_type_id',
+    ];
+
+    public function notificationType()
     {
-        return $this->belongsTo(Appointment::class);
+        return $this->belongsTo(NotificationType::class, 'NotificationType_notification_type_id', 'notification_type_id');
     }
 }

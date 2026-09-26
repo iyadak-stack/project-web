@@ -4,16 +4,14 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
-use Laravel\Fortify\TwoFactorAuthenticatable;
 
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -31,12 +29,31 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
+    use HasFactory, Notifiable, SoftDeletes, PasskeyAuthenticatable;
+
+    protected $table = 'Users';
+    protected $primaryKey = 'user_id';
+    public $incrementing = false;
+    protected $keyType = 'string';
+
+    protected $fillable = [
+        'user_id',
+        'email',
+        'password',
+        'first_name',
+        'last_name',
+        'role',
+        'is_active',
+        'current_role',
+        'profile_picture',
+    ];
+
+    protected $hidden = [
+        'password',
+    ];
 
     /**
      * Get the attributes that should be cast.
@@ -46,8 +63,9 @@ class User extends Authenticatable implements PasskeyUser
     protected function casts(): array
     {
         return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
+            'deleted_at' => 'datetime',
         ];
     }
 
@@ -56,26 +74,28 @@ class User extends Authenticatable implements PasskeyUser
      */
     public function initials(): string
     {
-        $initials = Str::initials($this->name, true);
+        $initials = Str::initials($this->first_name, true);
 
         return Str::length($initials) > 1
             ? Str::substr($initials, 0, 1).Str::substr($initials, -1)
             : $initials;
     }
 
+    // ความสัมพันธ์กับโปรไฟล์ติวเตอร์
     public function tutorProfile(): HasOne
     {
-        return $this->hasOne(TutorProfile::class);
+        return $this->hasOne(TutorProfile::class, 'Users_user_id', 'user_id');
     }
 
+    // ความสัมพันธ์กับโปรไฟล์นักเรียน
     public function studentProfile(): HasOne
     {
-        return $this->hasOne(StudentProfile::class);
+        return $this->hasOne(StudentProfile::class, 'Users_user_id', 'user_id');
     }
 
-// 2. รายการ Favorite ทั้งหมดที่ User คนนี้กดเซฟไว้[cite: 1]
+    // รายการ Favorite ทั้งหมดที่ User คนนี้กดเซฟไว้
     public function favorites(): HasMany
     {
-        return $this->hasMany(Favorite::class);
+        return $this->hasMany(Favorite::class, 'Users_user_id', 'user_id');
     }
 }
