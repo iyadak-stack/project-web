@@ -71,12 +71,6 @@
                                 {{ $availability->start_datetime->format('H:i') }} -
                                 {{ $availability->end_datetime->format('H:i') }}
                             </p>
-                            <a
-                                href="{{ route('tutor.book', ['tutorProfile' => $tutorProfile, 'availability' => $availability]) }}"
-                                class="btn btn-primary"
-                            >
-                                จองติวเตอร์
-                            </a>
                         </div>
                     @endforeach
                 @else

@@ -6,7 +6,6 @@ use App\Models\TutorProfile;
 use App\Models\Subject;
 use App\Models\Favorite;
 use App\Models\Availability;
-use App\Models\StudentProfile;
 use Illuminate\Http\Request;
 
 class TutorController extends Controller
@@ -183,107 +182,5 @@ class TutorController extends Controller
             'availabilities',
             'isFavorite'
         ));
-    }
-
-    // แสดงหน้าจอง Tutor
-    public function book(
-        TutorProfile $tutorProfile,
-        Availability $availability
-    ) {
-        // โหลดข้อมูล Tutor และวิชาที่สอน
-        $tutorProfile->load(['user', 'subjects']);
-
-        // หา Student Profile ของผู้ใช้ที่กำลัง Login
-        $studentProfile = StudentProfile::where(
-            'user_id',
-            auth()->id()
-        )->firstOrFail();
-
-        // ตรวจสอบว่าเวลาที่เลือกเป็นของ Tutor คนนี้จริง
-        // และยังไม่ผ่านไป
-        $selectedAvailability = Availability::where(
-            'availability_id',
-            $availability->availability_id
-        )
-            ->where('user_id', $tutorProfile->user_id)
-            ->where('start_datetime', '>=', now())
-            ->firstOrFail();
-
-        return view('tutor.booking', compact(
-            'tutorProfile',
-            'studentProfile',
-            'selectedAvailability'
-        ));
-    }
-
-    // บันทึกการจอง Tutor
-    public function saveBooking(
-        Request $request,
-        TutorProfile $tutorProfile,
-        Availability $availability
-    ) {
-        // ตรวจสอบว่ามีการเลือกวิชา
-        $request->validate([
-            'subject_id' => ['required'],
-        ]);
-
-        // หา Student Profile ของผู้ใช้ที่กำลัง Login
-        $student = StudentProfile::where(
-            'user_id',
-            auth()->id()
-        )->firstOrFail();
-
-        // ตรวจสอบว่าวิชาที่เลือกเป็นวิชาที่ Tutor คนนี้สอน
-        $subject = $tutorProfile->subjects()
-            ->where('Subjec_id', $request->subject_id)
-            ->firstOrFail();
-
-        // ตรวจสอบว่าเวลาที่เลือกเป็นของ Tutor คนนี้
-        // และยังสามารถจองได้
-        $selectedAvailability = Availability::where(
-            'availability_id',
-            $availability->availability_id
-        )
-            ->where('user_id', $tutorProfile->user_id)
-            ->where('start_datetime', '>=', now())
-            ->firstOrFail();
-
-        // สร้างรหัสนัดหมาย
-        $appointmentId = 'APP' . rand(1000000, 9999999);
-
-        // บันทึกข้อมูลการนัดหมาย
-        \DB::table('appointments')->insert([
-            'Appointment_id' => $appointmentId,
-            'mode' => $tutorProfile->teaching_mode,
-            'appointment_datetime' => $selectedAvailability->start_datetime,
-            'status' => 'pending',
-            'start_datetime' => $selectedAvailability->start_datetime,
-            'end_datetime' => $selectedAvailability->end_datetime,
-            'Subject_subject_id' => $subject->Subjec_id,
-            'Tutor_profiles_tutor_id' => $tutorProfile->id,
-            'Student_profiles_student_id' => $student->id,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        // สร้างรหัส Notification
-        $notificationId = 'NOT' . rand(1000000, 9999999);
-
-        // แจ้ง Tutor ว่ามีการจองใหม่
-        \DB::table('notifications')->insert([
-            'Notification_id' => $notificationId,
-            'notification_type' => 'booking',
-            'message' => 'มีการจองนัดหมายใหม่รอยืนยัน',
-            'is_read' => false,
-            'Users_user_id' => $tutorProfile->user_id,
-            'NotificationType_notification_type_id' => 'TYPE01',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        // กลับไปหน้า Tutor Profile
-        return redirect()
-            ->route('tutor.show', $tutorProfile)
-            ->with('success', 'จองติวเตอร์สำเร็จ');
     }
 }

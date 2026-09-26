@@ -56,13 +56,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/tutors/{tutorProfile}', [TutorController::class, 'show'])
         ->name('tutor.show');
 
-    // การจองติวเตอร์
-    Route::get('/tutor/{tutorProfile}/book/{availability}', [TutorController::class, 'book'])
-        ->name('tutor.book');
-
-    Route::post('/tutor/{tutorProfile}/book/{availability}/save', [TutorController::class, 'saveBooking'])
-        ->name('tutor.book.save');
-
     // จัดการรายวิชา
     Route::resource('subjects', SubjectController::class);
 
