@@ -2,100 +2,67 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Laravel\Fortify\Contracts\PasskeyUser;
 use Laravel\Fortify\PasskeyAuthenticatable;
 
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-
-/**
- * @property int $id
- * @property string $name
- * @property string $email
- * @property Carbon|null $email_verified_at
- * @property string $password
- * @property string|null $two_factor_secret
- * @property string|null $two_factor_recovery_codes
- * @property Carbon|null $two_factor_confirmed_at
- * @property string|null $remember_token
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- */
 class User extends Authenticatable implements PasskeyUser
 {
-    /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, SoftDeletes, PasskeyAuthenticatable;
+    // ใช้ HasFactory สำหรับสร้างข้อมูลทดสอบ
+    use HasFactory, Notifiable, PasskeyAuthenticatable;
 
-    protected $table = 'Users';
-    protected $primaryKey = 'user_id';
-    public $incrementing = false;
-    protected $keyType = 'string';
-
+    protected $table = 'users';
+    protected $primaryKey = 'id';
+    public $incrementing = true;
+    protected $keyType = 'int';
     protected $fillable = [
-        'user_id',
+        'name',
         'email',
         'password',
-        'first_name',
-        'last_name',
-        'role',
-        'is_active',
         'current_role',
-        'profile_picture',
     ];
 
     protected $hidden = [
         'password',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
+            'email_verified_at' => 'datetime',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
-            'deleted_at' => 'datetime',
+            'password' => 'hashed',
         ];
     }
 
-    /**
-     * Get the user's initials
-     */
+    // สร้างชื่อย่อของ User
     public function initials(): string
     {
-        $initials = Str::initials($this->first_name, true);
-
-        return Str::length($initials) > 1
-            ? Str::substr($initials, 0, 1).Str::substr($initials, -1)
-            : $initials;
+        return Str::initials($this->name, true);
     }
 
-    // ความสัมพันธ์กับโปรไฟล์ติวเตอร์
+    // User 1 คน สามารถมี Tutor Profile 1 อัน
     public function tutorProfile(): HasOne
     {
-        return $this->hasOne(TutorProfile::class, 'Users_user_id', 'user_id');
+        return $this->hasOne(TutorProfile::class, 'user_id', 'id');
     }
 
-    // ความสัมพันธ์กับโปรไฟล์นักเรียน
+    // User 1 คน สามารถมี Student Profile 1 อัน
     public function studentProfile(): HasOne
     {
-        return $this->hasOne(StudentProfile::class, 'Users_user_id', 'user_id');
+        return $this->hasOne(StudentProfile::class, 'user_id', 'id');
     }
 
-    // รายการ Favorite ทั้งหมดที่ User คนนี้กดเซฟไว้
+    // User 1 คน สามารถมี Favorite ได้หลายรายการ
     public function favorites(): HasMany
     {
-        return $this->hasMany(Favorite::class, 'Users_user_id', 'user_id');
+        return $this->hasMany(Favorite::class, 'user_id', 'id');
     }
 }

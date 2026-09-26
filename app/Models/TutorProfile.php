@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class TutorProfile extends Model
 {
+    // ข้อมูลที่สามารถบันทึกหรือแก้ไขได้
     protected $fillable = [
         'user_id',
         'bio',
@@ -16,12 +17,14 @@ class TutorProfile extends Model
         'teaching_mode',
     ];
 
-    // ความสัมพันธ์: TutorProfile เป็นของ User 1 คน
+    // Tutor Profile เป็นของ User 1 คน
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
+    // Tutor 1 คนสามารถสอนได้หลายวิชา
+    // และวิชา 1 วิชาสามารถมี Tutor หลายคน
     public function subjects(): BelongsToMany
     {
         return $this->belongsToMany(

@@ -1,38 +1,22 @@
 @extends('layouts.tutor')
-
-@section('title', 'Student Profile')
-
+@section('title', 'โปรไฟล์นักเรียน')
 @section('content')
 
-    <h1>Student Profile</h1>
+<h1>โปรไฟล์นักเรียน</h1>
 
-    @if (session('success'))
-        <p>
-            {{ session('success') }}
-        </p>
-    @endif
+@if (session('success'))
+    <p>{{ session('success') }}</p>
+@endif
 
-    <p>
-        Name:
-        {{ auth()->user()->name }}
-    </p>
+<p>ชื่อ: {{ auth()->user()->name }}</p>
 
-    @if ($studentProfile)
-        <p>
-            Bio:
-            {{ $studentProfile->bio ?? 'No bio available.' }}
-        </p>
-    @else
-        <p>
-            You don't have a student profile yet.
-        </p>
+@if ($studentProfile)
+    <p>ประวัติ: {{ $studentProfile->bio ?? 'ยังไม่มีข้อมูลประวัติ' }}</p>
+@else
+    <p>คุณยังไม่มีโปรไฟล์นักเรียน</p>
+@endif
 
-    @endif
-    <br>
-    <a href="{{ route('student.profile.edit') }}">
-        <button type="button">
-            Edit Profile
-        </button>
-    </a>
-
+<a href="{{ route('student.profile.edit') }}">
+    <button type="button">แก้ไขโปรไฟล์</button>
+</a>
 @endsection

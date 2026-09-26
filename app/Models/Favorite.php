@@ -8,19 +8,20 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Favorite extends Model
 {
+    // ข้อมูลที่สามารถบันทึกได้
     protected $fillable = [
         'user_id',
         'favoritable_type',
         'favoritable_id',
     ];
 
-    // ความสัมพันธ์: Favorite เป็นของ User คนที่กดเซฟ[cite: 1]
+    // Favorite เป็นของ User ที่กดบันทึก
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    // ความสัมพันธ์แบบ Polymorphic (ชี้ได้ทั้ง User/Tutor และ Subject ของทับทิม)[cite: 1]
+    // Favorite สามารถอ้างอิงได้ทั้ง Tutor หรือ Subject
     public function favoritable(): MorphTo
     {
         return $this->morphTo();

@@ -6,9 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+    // สร้างตาราง Tutor Profile
     public function up(): void
     {
         Schema::create('tutor_profiles', function (Blueprint $table) {
@@ -22,9 +20,7 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+     // ลบตาราง Tutor Profile
     public function down(): void
     {
         Schema::dropIfExists('tutor_profiles');

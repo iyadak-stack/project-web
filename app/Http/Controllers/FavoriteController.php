@@ -8,11 +8,12 @@ use App\Models\Subject;
 
 class FavoriteController extends Controller
 {
-    // เพิ่ม Tutor เป็นรายการโปรด
+    // เพิ่ม Tutor ในรายการโปรด
     public function storeTutor(TutorProfile $tutorProfile)
     {
+        $userId = auth()->id();
         Favorite::firstOrCreate([
-            'user_id' => auth()->id(),
+            'user_id' => $userId,
             'favoritable_type' => TutorProfile::class,
             'favoritable_id' => $tutorProfile->id,
         ]);
@@ -23,7 +24,8 @@ class FavoriteController extends Controller
     // ลบ Tutor ออกจากรายการโปรด
     public function destroyTutor(TutorProfile $tutorProfile)
     {
-        Favorite::where('user_id', auth()->id())
+        $userId = auth()->id();
+        Favorite::where('user_id', $userId)
             ->where('favoritable_type', TutorProfile::class)
             ->where('favoritable_id', $tutorProfile->id)
             ->delete();
@@ -31,11 +33,12 @@ class FavoriteController extends Controller
         return back()->with('success', 'ลบติวเตอร์ออกจากรายการโปรดแล้ว');
     }
 
-    // เพิ่ม Subject เป็นรายการโปรด
+    // เพิ่ม Subject ในรายการโปรด
     public function storeSubject(Subject $subject)
     {
+        $userId = auth()->id();
         Favorite::firstOrCreate([
-            'user_id' => auth()->id(),
+            'user_id' => $userId,
             'favoritable_type' => Subject::class,
             'favoritable_id' => $subject->getKey(),
         ]);
@@ -46,7 +49,8 @@ class FavoriteController extends Controller
     // ลบ Subject ออกจากรายการโปรด
     public function destroySubject(Subject $subject)
     {
-        Favorite::where('user_id', auth()->id())
+        $userId = auth()->id();
+        Favorite::where('user_id', $userId)
             ->where('favoritable_type', Subject::class)
             ->where('favoritable_id', $subject->getKey())
             ->delete();
@@ -54,10 +58,11 @@ class FavoriteController extends Controller
         return back()->with('success', 'ลบวิชาออกจากรายการโปรดแล้ว');
     }
 
-    // แสดงรายการโปรดทั้งหมด
+    // แสดงรายการโปรด
     public function tutorFavorites()
     {
-        $favorites = Favorite::where('user_id', auth()->id())
+        $userId = auth()->id();
+        $favorites = Favorite::where('user_id', $userId)
             ->with('favoritable')
             ->get();
 
