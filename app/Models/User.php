@@ -84,18 +84,18 @@ class User extends Authenticatable implements PasskeyUser
     // ความสัมพันธ์กับโปรไฟล์ติวเตอร์
     public function tutorProfile(): HasOne
     {
-        return $this->hasOne(TutorProfile::class, 'Users_user_id', 'user_id');
+        return $this->hasOne(TutorProfile::class, 'user_id', 'user_id'); // แก้ไข
     }
 
     // ความสัมพันธ์กับโปรไฟล์นักเรียน
     public function studentProfile(): HasOne
     {
-        return $this->hasOne(StudentProfile::class, 'Users_user_id', 'user_id');
+        return $this->hasOne(StudentProfile::class, 'user_id', 'user_id'); // แก้ไข
     }
 
     // รายการ Favorite ทั้งหมดที่ User คนนี้กดเซฟไว้
     public function favorites(): HasMany
     {
-        return $this->hasMany(Favorite::class, 'Users_user_id', 'user_id');
+        return $this->hasMany(Favorite::class, 'user_id', 'user_id'); // แก้ไข
     }
 }
