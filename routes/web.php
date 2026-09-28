@@ -5,8 +5,20 @@ use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\StudentContactController;
+use App\Http\Controllers\AuthController;
 
 Route::view('/', 'welcome')->name('home');
+
+// หน้า Login & Register
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('/', function () {
+    return 'ยินดีต้อนรับ! User ID ของคุณคือ: ' . session('user_id') . ' | Role ปัจจุบัน: ' . session('current_role');
+})->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
