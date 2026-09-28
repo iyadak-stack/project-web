@@ -169,25 +169,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/reviews', [ReviewController::class, 'store'])
         ->name('reviews.store');
 
-    Route::get('/reviews/{review}/edit', [ReviewController::class, 'edit'])
-        ->name('reviews.edit');
+    // Route::get('/reviews/{review}/edit', [ReviewController::class, 'edit'])
+    //     ->name('reviews.edit');
 
-    Route::put('/reviews/{review}', [ReviewController::class, 'update'])
-        ->name('reviews.update');
+    // Route::put('/reviews/{review}', [ReviewController::class, 'update'])
+    //     ->name('reviews.update');
 
-    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])
-        ->name('reviews.destroy');
+    // Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])
+    //     ->name('reviews.destroy');
 
 
     // =========================
     // Report
     // =========================
 
-    // Route::get('/reports/create', [ReportController::class, 'create'])
-    //     ->name('reports.create');
+    Route::get('/reports/create', [ReportController::class, 'create'])
+        ->name('reports.create');
 
-    // Route::post('/reports', [ReportController::class, 'store'])
-    //     ->name('reports.store');
+    Route::post('/reports', [ReportController::class, 'store'])
+        ->name('reports.store');
     
 });
 
