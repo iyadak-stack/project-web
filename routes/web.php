@@ -12,6 +12,8 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\StudentProfileController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\ReviewController;
+use App\Http\Controllers\ReportController;
 
 Route::get('/', [TutorController::class, 'home'])->name('home');
 
@@ -152,6 +154,41 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/switch-role', [RoleController::class, 'switchRole'])
         ->name('role.switch');
+
+
+    // =========================
+    // Review
+    // =========================
+
+    Route::get('/reviews', [ReviewController::class, 'index'])
+        ->name('reviews.index');
+
+    Route::get('/reviews/create', [ReviewController::class, 'create'])
+        ->name('reviews.create');
+
+    Route::post('/reviews', [ReviewController::class, 'store'])
+        ->name('reviews.store');
+
+    Route::get('/reviews/{review}/edit', [ReviewController::class, 'edit'])
+        ->name('reviews.edit');
+
+    Route::put('/reviews/{review}', [ReviewController::class, 'update'])
+        ->name('reviews.update');
+
+    Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])
+        ->name('reviews.destroy');
+
+
+    // =========================
+    // Report
+    // =========================
+
+    // Route::get('/reports/create', [ReportController::class, 'create'])
+    //     ->name('reports.create');
+
+    // Route::post('/reports', [ReportController::class, 'store'])
+    //     ->name('reports.store');
+    
 });
 
 require __DIR__.'/settings.php';
