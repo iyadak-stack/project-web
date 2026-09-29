@@ -1,0 +1,11 @@
+/app/Http/Controllers/AvailabilityController.php @pokpong007
+/app/Http/Controllers/CheckScheduleController.php @pokpong007
+/app/Http/Requests/Availability/ @pokpong007
+/app/Http/Requests/Scheduling/ @pokpong007
+/app/Models/Availability.php @pokpong007
+/app/Services/Scheduling/ @pokpong007
+/database/migrations/2026_09_16_000000_create_availabilities_table.php @pokpong007
+/resources/views/availabilities/ @pokpong007
+/resources/views/check-schedule/ @pokpong007
+/tests/Feature/Scheduling/ @pokpong007
+/tests/Unit/Scheduling/ @pokpong007
