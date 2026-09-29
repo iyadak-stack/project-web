@@ -8,12 +8,10 @@ use Illuminate\Validation\Rule;
 
 trait ProfileValidationRules
 {
-    /**
-     * Get the validation rules used to validate user profiles.
-     *
-     * @return array<string, array<int, ValidationRule|array<mixed>|string>>
-     */
-    protected function profileRules(?int $userId = null): array
+    //สำหรับตรวจสอบข้อมูล Profile ของ User
+    // $userId เป็น string เพราะ user_id ของเราเป็น CHAR(10)
+    // ถ้าไม่ได้ส่ง userId มา จะมีค่าเป็น null
+    protected function profileRules(?string $userId = null): array
     {
         return [
             'name' => $this->nameRules(),
@@ -21,30 +19,24 @@ trait ProfileValidationRules
         ];
     }
 
-    /**
-     * Get the validation rules used to validate user names.
-     *
-     * @return array<int, ValidationRule|array<mixed>|string>
-     */
+    // กำหนดกฎตรวจสอบชื่อ
     protected function nameRules(): array
     {
         return ['required', 'string', 'max:255'];
     }
 
-    /**
-     * Get the validation rules used to validate user emails.
-     *
-     * @return array<int, ValidationRule|array<mixed>|string>
-     */
-    protected function emailRules(?int $userId = null): array
+    protected function emailRules(?string $userId = null): array
     {
         return [
             'required',
             'string',
             'email',
             'max:255',
+            // ถ้ายังไม่มี userId แสดงว่าเป็นการสมัครสมาชิกใหม่
             $userId === null
                 ? Rule::unique(User::class)
+                // ถ้ามี userId แสดงว่าเป็นการแก้ไขข้อมูลของ User เดิม
+                // ให้ตรวจ Email ซ้ำ แต่ไม่นับ User คนปัจจุบัน
                 : Rule::unique(User::class)->ignore($userId),
         ];
     }

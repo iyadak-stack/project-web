@@ -25,19 +25,23 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            'user_id' => 'U' . strtoupper(Str::random(9)),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            'first_name' => fake()->firstName(),
+            'last_name' => fake()->lastName(),
+            'role' => 'student',
+            'is_active' => true,
+            'current_role' => 'student',
+            'profile_picture' => null,
             'remember_token' => Str::random(10),
-            /* @chisel-2fa */
+            /* 2FA fields */
             'two_factor_secret' => null,
             'two_factor_recovery_codes' => null,
             'two_factor_confirmed_at' => null,
-            /* @end-chisel-2fa */
         ];
     }
-
     /**
      * Indicate that the model's email address should be unverified.
      */

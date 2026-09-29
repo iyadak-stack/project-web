@@ -5,18 +5,29 @@ namespace App\Http\Controllers;
 use App\Models\Favorite;
 use App\Models\TutorProfile;
 use App\Models\Subject;
+use Illuminate\Support\Str;
 
 class FavoriteController extends Controller
 {
     // เพิ่ม Tutor ในรายการโปรด
     public function storeTutor(TutorProfile $tutorProfile)
     {
+        //เก็บ ID ของผู้ใช้ที่ล็อกอินอยู่ไว้ในตัวแปร $userId
         $userId = auth()->id();
-        Favorite::firstOrCreate([
-            'user_id' => $userId,
-            'favoritable_type' => TutorProfile::class,
-            'favoritable_id' => $tutorProfile->id,
-        ]);
+
+        //ทำงานกับ User คนเดียวกัน
+        Favorite::firstOrCreate(
+            [
+                // ใช้ค้นหาว่ามี Favorite นี้อยู่หรือยัง
+                'user_id' => $userId,
+                'favoritable_type' => TutorProfile::class,
+                'favoritable_id' => $tutorProfile->id,
+            ],
+            [
+                // ถ้ายังไม่มี ให้สร้างข้อมูลใหม่
+                'id' => 'FV' . strtoupper(Str::random(8)),
+            ]
+        );
 
         return back()->with('success', 'เพิ่มติวเตอร์ในรายการโปรดแล้ว');
     }
@@ -25,6 +36,7 @@ class FavoriteController extends Controller
     public function destroyTutor(TutorProfile $tutorProfile)
     {
         $userId = auth()->id();
+
         Favorite::where('user_id', $userId)
             ->where('favoritable_type', TutorProfile::class)
             ->where('favoritable_id', $tutorProfile->id)
@@ -37,11 +49,17 @@ class FavoriteController extends Controller
     public function storeSubject(Subject $subject)
     {
         $userId = auth()->id();
-        Favorite::firstOrCreate([
-            'user_id' => $userId,
-            'favoritable_type' => Subject::class,
-            'favoritable_id' => $subject->getKey(),
-        ]);
+
+        Favorite::firstOrCreate(
+            [
+                'user_id' => $userId,
+                'favoritable_type' => Subject::class,
+                'favoritable_id' => $subject->getKey(),
+            ],
+            [
+                'id' => 'FV' . strtoupper(Str::random(8)),
+            ]
+        );
 
         return back()->with('success', 'เพิ่มวิชาในรายการโปรดแล้ว');
     }
@@ -50,6 +68,7 @@ class FavoriteController extends Controller
     public function destroySubject(Subject $subject)
     {
         $userId = auth()->id();
+
         Favorite::where('user_id', $userId)
             ->where('favoritable_type', Subject::class)
             ->where('favoritable_id', $subject->getKey())
@@ -62,6 +81,7 @@ class FavoriteController extends Controller
     public function tutorFavorites()
     {
         $userId = auth()->id();
+
         $favorites = Favorite::where('user_id', $userId)
             ->with('favoritable')
             ->get();

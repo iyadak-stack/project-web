@@ -8,8 +8,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class TutorProfile extends Model
 {
-    // ข้อมูลที่สามารถบันทึกหรือแก้ไขได้
+    protected $primaryKey = 'id';
+    public $incrementing = false; //PK นี้ไม่ต้องเพิ่มเลขอัตโนมัติ
+    protected $keyType = 'string'; //PK เป็นข้อมูลประเภท String
+
     protected $fillable = [
+        'id',
         'user_id',
         'bio',
         'experience_years',
@@ -17,14 +21,13 @@ class TutorProfile extends Model
         'teaching_mode',
     ];
 
-    // Tutor Profile เป็นของ User 1 คน
+    // TutorProfile เป็นของ User 1 คน
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'user_id');
     }
 
-    // Tutor 1 คนสามารถสอนได้หลายวิชา
-    // และวิชา 1 วิชาสามารถมี Tutor หลายคน
+    // Tutor 1 คนสอนได้หลายวิชา
     public function subjects(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -33,7 +36,7 @@ class TutorProfile extends Model
             'Tutor_profiles_tutor_id',
             'Subject_subject_id',
             'id',
-            'Subjec_id'
+            'subject_id'
         );
     }
 }
