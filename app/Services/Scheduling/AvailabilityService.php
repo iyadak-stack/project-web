@@ -8,7 +8,9 @@ use App\Models\StudentProfile;
 use App\Models\TutorProfile;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Validation\ValidationException;
 
 class AvailabilityService
 {
@@ -30,6 +32,7 @@ class AvailabilityService
             ->where('start_datetime', '<', $rangeEnd)
             ->where('end_datetime', '>', $rangeStart)
             ->orderBy('start_datetime')
+            ->when(DB::transactionLevel() > 0, fn ($query) => $query->lockForUpdate())
             ->get()
             ->all();
     }
@@ -43,16 +46,18 @@ class AvailabilityService
             || ! Schema::hasColumn('appointments', 'Tutor_profiles_tutor_id')
             || ! Schema::hasColumn('appointments', 'start_datetime')
             || ! Schema::hasColumn('appointments', 'end_datetime')) {
-            return [];
+            throw ValidationException::withMessages(['start_datetime' => 'ข้อมูลนัดหมายยังไม่พร้อม จึงยังตรวจเวลาว่างไม่ได้']);
         }
 
         $studentProfileIds = StudentProfile::query()
-            ->where('user_id', $studentId)
+            ->whereIn('user_id', [$studentId, $tutorId])
+            ->toBase()
             ->pluck('id')
             ->map(fn ($id): string => (string) $id)
             ->all();
         $tutorProfileIds = TutorProfile::query()
-            ->where('user_id', $tutorId)
+            ->whereIn('user_id', [$studentId, $tutorId])
+            ->toBase()
             ->pluck('id')
             ->map(fn ($id): string => (string) $id)
             ->all();
@@ -84,6 +89,8 @@ class AvailabilityService
             $query->where('status', '!=', 'cancelled');
         }
 
-        return $query->orderBy('start_datetime')->get()->all();
+        return $query->orderBy('start_datetime')
+            ->when(DB::transactionLevel() > 0, fn ($query) => $query->lockForUpdate())
+            ->get()->all();
     }
 }
